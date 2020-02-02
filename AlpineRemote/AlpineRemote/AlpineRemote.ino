@@ -6,26 +6,28 @@
 
 #pragma region Po³¹czenia
 
-#define RED 2
-#define BLACK 3
+                    //  Wtyczka         Pin     Funkcja
+#define RED 2       //  Br¹zowy         24      Masa 1
+#define BLACK 3     //  Pomarañczowy    26      Masa 2
 
-#define BLUE 4
-#define YELLOW 5
-#define GREEN 6
-#define BROWN A5
+#define BLUE 4      //  Bia³y           29      Mute/VolUp
+#define YELLOW 5    //  Czarny          27      VolDn/SrcDn
+#define GREEN 6     //  Kremowy         25      Band/SrcUp
+#define BROWN A5    //  Fioletowy       28      Rolka      
 
-#define SIGNAL 8
+#define SIGNAL 8    //  Radio Remote    REM     Sygna³ do radia
 
 #pragma endregion
 
 #pragma region Przyciski
 
-int Mute = BLUE; // Black- (u nas nie ma osobnego przycisku wiêc wywo³uje zwieraj¹c VolUp i VolDn w tym samym czasie do czerwonej masy)
-int VolDn = YELLOW; // Red-
-int VolUp = BLUE; // Red-
-int Band = GREEN; // Red-
-int SrcDn = YELLOW; // Black- (Dodatkowo zaprogramuje tu w³¹czanie i wy³¹czanie radia podobnie jak Mute)
-int SrcUp = GREEN; // Black-
+                        // Masa     Odpowiednik     Pin     Uwagi
+int Mute = BLUE;        // Black-   Pomarañczowy    26      U nas nie ma osobnego przycisku wiêc wywo³uje zwieraj¹c VolUp i VolDn w tym samym czasie do czerwonej masy
+int VolDn = YELLOW;     // Red-     Br¹zowy         24
+int VolUp = BLUE;       // Red-     Br¹zowy         24
+int Band = GREEN;       // Red-     Br¹zowy         24
+int SrcDn = YELLOW;     // Black-   Pomarañczowy    26      Dodatkowo zaprogramuje tu w³¹czanie i wy³¹czanie radia podobnie jak Mute
+int SrcUp = GREEN;      // Black-   Pomarañczowy    26
 
 #pragma endregion
 
