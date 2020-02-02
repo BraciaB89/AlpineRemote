@@ -13,7 +13,7 @@
 #define BLUE 4      //  Bia³y           29      Mute/VolUp
 #define YELLOW 5    //  Czarny          27      VolDn/SrcDn
 #define GREEN 6     //  Kremowy         25      Band/SrcUp
-#define BROWN A5    //  Fioletowy       28      Rolka      
+#define BROWN A0    //  Fioletowy       28      Rolka      
 
 #define SIGNAL 8    //  Radio Remote    REM     Sygna³ do radia
 
