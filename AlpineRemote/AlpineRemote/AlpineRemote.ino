@@ -6,16 +6,16 @@
 
 #pragma region Po³¹czenia
 
-                    //  Wtyczka         Pin     Funkcja
-#define RED 2       //  Br¹zowy         24      Masa 1
-#define BLACK 3     //  Pomarañczowy    26      Masa 2
+                    //  Wtyczka         Pin     Funkcja             Atmega
+#define RED 2       //  Br¹zowy         24      Masa 1              GND(8,22)
+#define BLACK 3     //  Pomarañczowy    26      Masa 2              GND(8,22)
 
-#define BLUE 4      //  Bia³y           29      Mute/VolUp
-#define YELLOW 5    //  Czarny          27      VolDn/SrcDn
-#define GREEN 6     //  Kremowy         25      Band/SrcUp
-#define BROWN A0    //  Fioletowy       28      Rolka      
+#define BLUE 5      //  Bia³y           29      Mute/VolUp          11
+#define YELLOW 6    //  Czarny          27      VolDn/SrcDn         12
+#define GREEN 7     //  Kremowy         25      Band/SrcUp          13
+#define BROWN A0    //  Fioletowy       28      Rolka               23
 
-#define SIGNAL 8    //  Radio Remote    REM     Sygna³ do radia
+#define SIGNAL 8    //  Radio Remote    REM     Sygna³ do radia     14
 
 #pragma endregion
 
