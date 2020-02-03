@@ -73,14 +73,16 @@ void setup()
     attachInterrupt(digitalPinToInterrupt(RED), RedInterrupt, FALLING);
     attachInterrupt(digitalPinToInterrupt(BLACK), BlackInterrupt, FALLING);
 
-    delay(5000);
-    lastCheck = millis();
     Serial.begin(9600);
+    Serial.println("STARTING UP");
+    delay(5000);
+    lastCheck = millis();    
+    Serial.println("READY");
 }
 
 void loop() 
 {
-    CheckAnalog();    
+    /*CheckAnalog();*/
 }
 
 #pragma region Funkcje sygna³ów
@@ -132,6 +134,9 @@ void EndSignal() // Sygna³ koñcowy transmisji
 void AlpineSignal(int signal[], String signalInfo) // Sygna³ w³aœciwy transmisji. Polecenie odczytywane jest ze stanów niskich i wysokich podanych w przekazanej tablicy. Do celów testowych nazwa sygna³u podawana jest na monitor portu szeregowego.
 {
     Serial.println();
+
+    StartSignal();
+
     for (int i = 0; i < 17; i = i + 1)
     {
         if (signal[i] == 1)
@@ -146,8 +151,10 @@ void AlpineSignal(int signal[], String signalInfo) // Sygna³ w³aœciwy transmisji
             digitalWrite(SIGNAL, LOW);
             delayMicroseconds(1000);
         }
-        Serial.print(signal[i]);
     }
+
+    EndSignal();
+
     Serial.println(signalInfo);
 }
 
@@ -158,57 +165,45 @@ void AlpineSignal(int signal[], String signalInfo) // Sygna³ w³aœciwy transmisji
 
 void RedInterrupt() // Przerwanie na czerwonej masie
 {
-    delay(150);
+    delay(1500);
 
     if (digitalRead(Band) == LOW) // Zmiana pasma
     {
-        StartSignal();
         AlpineSignal(bandProg, "BAND");
-        EndSignal();
         delay(100);
     }
 
     if (digitalRead(VolUp) == LOW && digitalRead(VolDn) == HIGH) // Podg³aszanie
     {
-        StartSignal();
         AlpineSignal(volUp, "VOL_UP");
-        EndSignal();
         delay(100);
     }
     if (digitalRead(VolDn) == LOW && digitalRead(VolUp) == HIGH) // Przyciszanie
     {
-        StartSignal();
         AlpineSignal(volDn, "VOL_DN");
-        EndSignal();
         delay(100);
     }
 
     if (digitalRead(VolDn) == LOW && digitalRead(VolUp) == LOW) // Wyciszanie poprzez przytrzymanie obu klawiszy g³oœnoœci - gdy brak dodatkowego przycisku
     {
-        StartSignal();
         AlpineSignal(muteBtn, "MUTE");
-        EndSignal();
         delay(100);
     }
 }
 
 void BlackInterrupt() // Przerwanie na czarnej masie
 {
-    delay(150);
+    delay(1500);
 
     if (digitalRead(Mute) == LOW) // Jeœli jest osobny przycisk do wyciszania
     {
-        StartSignal();
         AlpineSignal(muteBtn, "MUTE");
-        EndSignal();
         delay(100);
     }
 
     if (digitalRead(SrcUp) == LOW && digitalRead(SrcDn) == LOW) // Przytrzymaj oba aby w³¹czyæ/wy³¹czyæ
     {
-        StartSignal();
         AlpineSignal(powerBtn, "POWER");
-        EndSignal();
         delay(100);
     }
 
@@ -216,20 +211,16 @@ void BlackInterrupt() // Przerwanie na czarnej masie
     {
         unsigned long hold = millis();
 
-        if (millis() - hold >= 150)
+        if (millis() - hold >= 1500)
         {
             if (digitalRead(SrcUp) == HIGH && digitalRead(SrcDn) == HIGH) // Naciœnij jeden krótko aby zmieniæ Ÿród³o
             {
-                StartSignal();
                 AlpineSignal(sourceBtn, "SOURCE");
-                EndSignal();
                 delay(100);
             }
             else if (digitalRead(SrcUp) != digitalRead(SrcDn)) // Przytrzymaj jeden aby zapauzowaæ/odtworzyæ
             {
-                StartSignal();
                 AlpineSignal(entPlay, "PLAY/PAUSE");
-                EndSignal();
                 delay(100);
             }
         }
@@ -256,14 +247,10 @@ void CheckAnalog() // Obs³uga rolki
         {
             if ((analogValue - analogCheck) > 3) // Zmiana stacji lub utworu zale¿nie od trybu
             {
-                StartSignal();
                 AlpineSignal(stUp, "ST_UP");
-                EndSignal();
                 delay(100);
 
-                StartSignal();
                 AlpineSignal(trkUp, "TRK_UP");
-                EndSignal();
                 delay(100);
             }
         }
@@ -272,14 +259,10 @@ void CheckAnalog() // Obs³uga rolki
         {
             if ((analogValue - analogCheck) > 3) // Zmiana stacji lub utworu zale¿nie od trybu
             {
-                StartSignal();
                 AlpineSignal(stDn, "ST_DN");
-                EndSignal();
                 delay(100);
 
-                StartSignal();
                 AlpineSignal(trkDn, "TRK_DN");
-                EndSignal();
                 delay(100);
             }
         }
