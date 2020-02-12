@@ -77,6 +77,8 @@ void setup()
     Serial.println("STARTING UP");
     delay(500);
     lastCheck = millis();
+    attachInterrupt(digitalPinToInterrupt(RED), redISR, RISING);
+    attachInterrupt(digitalPinToInterrupt(BLACK), blackISR, RISING);
     Serial.println("READY");
 }
 
@@ -163,28 +165,18 @@ void AlpineSignal(int signal[], String signalInfo) // Sygna³ w³aœciwy transmisji
 #pragma endregion
 
 
-#pragma region Funkcje przerwañ
+#pragma region Funkcje przerwañ i przycisków
+
+void redISR()
+{
+    redFlag = true;
+}
 
 void CheckRed() // Przerwanie na czerwonej masie
 {
     if (redFlag == true)
     {
         RedFlag();
-    }
-
-    if (digitalRead(RED) == HIGH)
-    {
-        redFlag = true;
-        delay(1000);
-
-        if (digitalRead(RED) == HIGH)
-        {
-            redFlag = true;
-        }
-        else
-        {
-            redFlag = false;
-        }
     }
 }
 
@@ -210,6 +202,7 @@ void RedFlag()
         delay(100);
         redFlag = false;
     }
+
     if (digitalRead(VolDn) == LOW && digitalRead(VolUp) == HIGH) // Przyciszanie
     {
         AlpineSignal(volDn, "VOL_DN");
@@ -218,26 +211,16 @@ void RedFlag()
     }
 }
 
+void blackISR()
+{
+    blackFlag = true;
+}
+
 void CheckBlack() // Przerwanie na czarnej masie
 {
     if (blackFlag == true)
     {
         BlackFlag();
-    }
-
-    if (digitalRead(BLACK) == HIGH)
-    {
-        blackFlag = true;
-        delay(1000);
-
-        if (digitalRead(BLACK) == HIGH)
-        {
-            blackFlag = true;
-        }
-        else
-        {
-            blackFlag = false;
-        }
     }
 }
 void BlackFlag()
@@ -326,4 +309,4 @@ void CheckAnalog() // Obs³uga rolki
 
 #pragma endregion
 
-// Przerwania zdaj¹ siê nie reagowaæ na przytrzymanie przycisku przez pewien czas. Spróbujê odejœæ od tego na rzecz pollingu i flag. Ewentualnie zrobiæ przerwania, ale ich jedyn¹ funkcj¹ bêdzie zmiana flagi
+// Przerwania zdaj¹ siê reagowaæ. Przytrzymanie przycisku przez pewien czas te¿. Nale¿y ustawiæ czasy przytrzymania (w szczególnoœci mute) i przetestowaæ na radiu, a potem przenieœæ projekt na atmegê. Wczeœniej potestowaæ z rolk¹.

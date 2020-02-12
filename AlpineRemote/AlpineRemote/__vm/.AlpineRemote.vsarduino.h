@@ -16,6 +16,7 @@
 #define __AVR_atmega328p__
 #define __AVR_ATmega328P__
 #define __AVR_ATmega328p__
+#define _VMDEBUG 1
 #define F_CPU 16000000L
 #define ARDUINO 108010
 #define ARDUINO_AVR_UNO
@@ -87,6 +88,5 @@ typedef void *__builtin_va_list;
 #define pgm_read_ptr(address_short)   short()
 
 #include "AlpineRemote.ino"
-#include "G:\Programowanie\Arduino z PC\AlpineRemote\Testy\Rolka\Rolka.ino"
 #endif
 #endif

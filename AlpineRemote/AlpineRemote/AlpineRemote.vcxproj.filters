@@ -19,7 +19,6 @@
     <None Include="src\arduino folders read me.txt">
       <Filter>Misc Files</Filter>
     </None>
-    <None Include="G:\Programowanie\Arduino z PC\AlpineRemote\Testy\Rolka\Rolka.ino" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="__vm\.AlpineRemote.vsarduino.h">
