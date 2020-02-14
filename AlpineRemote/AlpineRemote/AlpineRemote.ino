@@ -291,6 +291,7 @@ void BlackFlag()
     //{
     //    AlpineSignal(muteBtn, "MUTE");
     //    delay(100);
+    //    blackFlag = false;
     //}
 }
 
