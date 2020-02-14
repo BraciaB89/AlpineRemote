@@ -55,7 +55,7 @@ int bandProg[] = { 0, 1, 1, 0, 1, 0, 1, 1, 1, 1, 1, 1, 0, 1, 1, 1, 0 };
 int analogCheck;
 int analogValue;
 
-//unsigned long lastCheck; rolka
+unsigned long lastCheck; // rolka
 
 bool redFlag = false;
 bool blackFlag = false;
@@ -76,7 +76,7 @@ void setup()
     Serial.begin(9600);
     Serial.println("STARTING UP");
     delay(500);
-    //lastCheck = millis(); rolka
+    lastCheck = millis(); // rolka
     attachInterrupt(digitalPinToInterrupt(RED), redISR, RISING);
     attachInterrupt(digitalPinToInterrupt(BLACK), blackISR, RISING);
     Serial.println("READY");
@@ -84,7 +84,7 @@ void setup()
 
 void loop()
 {
-    /*CheckAnalog();*/ // Obs³uga rolki
+    CheckAnalog(); // Obs³uga rolki
     CheckRed();
     CheckBlack();
 }
@@ -299,44 +299,44 @@ void BlackFlag() // Obs³uga przycisków
 
 #pragma region Rolka
 
-//void CheckAnalog() // Obs³uga rolki
-//{
-//    analogCheck = analogRead(BROWN);
-//    Serial.print("AnalogCheck: ");
-//    Serial.println(analogCheck);
-//
-//    if (millis() - lastCheck >= 150)
-//    {
-//        analogValue = analogRead(BROWN);
-//        Serial.println("AnalogValue: ");
-//        Serial.println(analogValue);
-//
-//        if (analogValue > analogCheck)
-//        {
-//            if ((analogValue - analogCheck) > 3) // Zmiana stacji lub utworu zale¿nie od trybu
-//            {
-//                AlpineSignal(stUp, "ST_UP");
-//                delay(100);
-//
-//                AlpineSignal(trkUp, "TRK_UP");
-//                delay(100);
-//            }
-//        }
-//
-//        if (analogValue < analogCheck)
-//        {
-//            if ((analogValue - analogCheck) > 3) // Zmiana stacji lub utworu zale¿nie od trybu
-//            {
-//                AlpineSignal(stDn, "ST_DN");
-//                delay(100);
-//
-//                AlpineSignal(trkDn, "TRK_DN");
-//                delay(100);
-//            }
-//        }
-//    }
-//    lastCheck = millis();
-//}
+void CheckAnalog() // Obs³uga rolki
+{
+    analogCheck = analogRead(BROWN);
+    Serial.print("AnalogCheck: ");
+    Serial.println(analogCheck);
+
+    if (millis() - lastCheck >= 150)
+    {
+        analogValue = analogRead(BROWN);
+        Serial.println("AnalogValue: ");
+        Serial.println(analogValue);
+
+        if (analogValue > analogCheck)
+        {
+            if ((analogValue - analogCheck) > 3) // Zmiana stacji lub utworu zale¿nie od trybu
+            {
+                AlpineSignal(stUp, "ST_UP");
+                delay(100);
+
+                AlpineSignal(trkUp, "TRK_UP");
+                delay(100);
+            }
+        }
+
+        if (analogValue < analogCheck)
+        {
+            if ((analogValue - analogCheck) > 3) // Zmiana stacji lub utworu zale¿nie od trybu
+            {
+                AlpineSignal(stDn, "ST_DN");
+                delay(100);
+
+                AlpineSignal(trkDn, "TRK_DN");
+                delay(100);
+            }
+        }
+    }
+    lastCheck = millis();
+}
 
 #pragma endregion
 
