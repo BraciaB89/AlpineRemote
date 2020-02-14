@@ -6,7 +6,7 @@
 
 #pragma region Po³¹czenia
 
-                    //  Wtyczka         Pin     Funkcja             Atmega
+//  Wtyczka         Pin     Funkcja             Atmega
 #define RED 2       //  Br¹zowy         24      Masa 1              GND(8,22)
 #define BLACK 3     //  Pomarañczowy    26      Masa 2              GND(8,22)
 
@@ -57,9 +57,12 @@ int analogValue;
 
 unsigned long lastCheck;
 
+bool redFlag = false;
+bool blackFlag = false;
+
 #pragma endregion
 
-void setup() 
+void setup()
 {
     pinMode(RED, INPUT);
     pinMode(BLACK, INPUT);
@@ -70,19 +73,20 @@ void setup()
     pinMode(SIGNAL, OUTPUT);
     digitalWrite(SIGNAL, LOW);
 
-    attachInterrupt(digitalPinToInterrupt(RED), RedInterrupt, RISING);
-    attachInterrupt(digitalPinToInterrupt(BLACK), BlackInterrupt, RISING);
-
     Serial.begin(9600);
     Serial.println("STARTING UP");
     delay(500);
-    lastCheck = millis();    
+    lastCheck = millis();
+    attachInterrupt(digitalPinToInterrupt(RED), redISR, RISING);
+    attachInterrupt(digitalPinToInterrupt(BLACK), blackISR, RISING);
     Serial.println("READY");
 }
 
-void loop() 
+void loop()
 {
     /*CheckAnalog();*/
+    CheckRed();
+    CheckBlack();
 }
 
 #pragma region Funkcje sygna³ów
@@ -161,91 +165,133 @@ void AlpineSignal(int signal[], String signalInfo) // Sygna³ w³aœciwy transmisji
 #pragma endregion
 
 
-#pragma region Funkcje przerwañ
+#pragma region Funkcje przerwañ i przycisków
 
-void RedInterrupt() // Przerwanie na czerwonej masie
+void redISR()
 {
-    bool pressed = false;
-    delay(2500);
+    redFlag = true;
+}
 
-    if (digitalRead(VolUp) == LOW || digitalRead(VolDn) == LOW || digitalRead(Band) == LOW)
+void CheckRed() // Przerwanie na czerwonej masie
+{
+    if (redFlag == true)
     {
-        pressed = true;
-    }
-
-    if (pressed == true)
-    {
-        if (digitalRead(Band) == LOW) // Zmiana pasma
-        {
-            AlpineSignal(bandProg, "BAND");
-            delay(100);
-            pressed = false;
-        }
-
-        if (digitalRead(VolDn) == LOW && digitalRead(VolUp) == LOW) // Wyciszanie poprzez przytrzymanie obu klawiszy g³oœnoœci - gdy brak dodatkowego przycisku
-        {
-            AlpineSignal(muteBtn, "MUTE");
-            delay(100);
-            pressed = false;
-        }
-
-        if (digitalRead(VolUp) == LOW && digitalRead(VolDn) == HIGH) // Podg³aszanie
-        {
-            AlpineSignal(volUp, "VOL_UP");
-            delay(100);
-            pressed = false;
-        }
-        if (digitalRead(VolDn) == LOW && digitalRead(VolUp) == HIGH) // Przyciszanie
-        {
-            AlpineSignal(volDn, "VOL_DN");
-            delay(100);
-            pressed = false;
-        }
+        RedFlag();
     }
 }
 
-void BlackInterrupt() // Przerwanie na czarnej masie
+void RedFlag()
 {
-    bool pressed = false;
-    delay(2500);
-    
-    if (digitalRead(SrcUp) == LOW || digitalRead(SrcDn) == LOW)
+    if (digitalRead(Band) == LOW) // Zmiana pasma
     {
-        pressed = true;
+        AlpineSignal(bandProg, "BAND");
+        delay(100);
+        redFlag = false;
     }
 
-    if (pressed == true)
-    {   
-        if (digitalRead(SrcUp) == HIGH && digitalRead(SrcDn) == HIGH) // Naciœnij jeden krótko aby zmieniæ Ÿród³o
-        {
-            AlpineSignal(sourceBtn, "SOURCE");
-            delay(100);
-            pressed = false;
-        }
+    if (digitalRead(VolDn) == LOW && digitalRead(VolUp) == LOW) // Wyciszanie poprzez przytrzymanie obu klawiszy g³oœnoœci - gdy brak dodatkowego przycisku
+    {
+        delay(500);
 
-        if (digitalRead(SrcUp) != digitalRead(SrcDn)) // Naciœnij jeden krótko aby zmieniæ Ÿród³o
+        if (digitalRead(VolDn) == LOW && digitalRead(VolUp) == LOW)
+        {
+            AlpineSignal(muteBtn, "MUTE");
+            delay(100);
+            redFlag = false;
+        }
+        redFlag = false;        
+    }
+
+    if (digitalRead(VolUp) == LOW && digitalRead(VolDn) == HIGH) // Podg³aszanie
+    {
+        delay(500);
+
+        if (digitalRead(VolDn) == LOW && digitalRead(VolUp) == LOW)
+        {
+            AlpineSignal(muteBtn, "MUTE");
+            delay(100);
+            redFlag = false;
+        }
+        else
+        {
+            AlpineSignal(volUp, "VOL_UP");
+            delay(100);
+            redFlag = false;
+        }
+        redFlag = false;
+    }
+
+    if (digitalRead(VolDn) == LOW && digitalRead(VolUp) == HIGH) // Przyciszanie
+    {
+        delay(500);
+
+        if (digitalRead(VolDn) == LOW && digitalRead(VolUp) == LOW)
+        {
+            AlpineSignal(muteBtn, "MUTE");
+            delay(100);
+            redFlag = false;
+        }
+        else
+        {
+            AlpineSignal(volDn, "VOL_DN");
+            delay(100);
+            redFlag = false;
+        }
+        redFlag = false;
+    }
+}
+
+void blackISR()
+{
+    blackFlag = true;
+}
+
+void CheckBlack() // Przerwanie na czarnej masie
+{
+    if (blackFlag == true)
+    {
+        BlackFlag();
+    }
+}
+void BlackFlag()
+{
+    if (digitalRead(SrcUp) != digitalRead(SrcDn))
+    {
+        delay(1000);
+
+        if (digitalRead(SrcUp) != digitalRead(SrcDn)) // Naciœnij jeden d³u¿ej aby zapauzowaæ
         {
             AlpineSignal(entPlay, "PLAY/PAUSE");
             delay(100);
-            pressed = false;
+            blackFlag = false;
         }
 
-        if (digitalRead(SrcUp) == LOW && digitalRead(SrcDn) == LOW) // Przytrzymaj oba aby w³¹czyæ/wy³¹czyæ
+        else if (digitalRead(SrcUp) == HIGH && digitalRead(SrcDn) == HIGH) // Naciœnij jeden krótko aby zmieniæ Ÿród³o
         {
-            delay(5000);
-            if (digitalRead(SrcUp) == LOW && digitalRead(SrcDn) == LOW)
-            {
-                AlpineSignal(powerBtn, "POWER");
-                delay(100);
-                pressed = false;
-            }            
-        }        
-    } 
+            AlpineSignal(sourceBtn, "SOURCE");
+            delay(100);
+            blackFlag = false;
+        }
+    }
+
+    if (digitalRead(SrcUp) == LOW && digitalRead(SrcDn) == LOW) // Przytrzymaj oba aby w³¹czyæ/wy³¹czyæ
+    {
+        delay(5000);
+
+        if (digitalRead(SrcUp) == LOW && digitalRead(SrcDn) == LOW)
+        {
+            AlpineSignal(powerBtn, "POWER");
+            delay(100);
+            blackFlag = false;
+        }
+        blackFlag = false;
+    }
 
     //if (digitalRead(Mute) == LOW) // Jeœli jest osobny przycisk do wyciszania
     //{
     //    AlpineSignal(muteBtn, "MUTE");
     //    delay(100);
+    //    blackFlag = false;
     //}
 }
 
@@ -294,4 +340,4 @@ void CheckAnalog() // Obs³uga rolki
 
 #pragma endregion
 
-// Przerwania zdaj¹ siê nie reagowaæ na przytrzymanie przycisku przez pewien czas. Spróbujê odejœæ od tego na rzecz pollingu i flag
+// Przerwania zdaj¹ siê reagowaæ. Przytrzymanie przycisku przez pewien czas te¿. Nale¿y ustawiæ czasy przytrzymania (w szczególnoœci mute) i przetestowaæ na radiu, a potem przenieœæ projekt na atmegê. Wczeœniej potestowaæ z rolk¹.
