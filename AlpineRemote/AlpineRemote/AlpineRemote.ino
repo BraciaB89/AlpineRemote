@@ -55,7 +55,7 @@ int bandProg[] = { 0, 1, 1, 0, 1, 0, 1, 1, 1, 1, 1, 1, 0, 1, 1, 1, 0 };
 int analogCheck;
 int analogValue;
 
-unsigned long lastCheck;
+//unsigned long lastCheck; rolka
 
 bool redFlag = false;
 bool blackFlag = false;
@@ -76,7 +76,7 @@ void setup()
     Serial.begin(9600);
     Serial.println("STARTING UP");
     delay(500);
-    lastCheck = millis();
+    //lastCheck = millis(); rolka
     attachInterrupt(digitalPinToInterrupt(RED), redISR, RISING);
     attachInterrupt(digitalPinToInterrupt(BLACK), blackISR, RISING);
     Serial.println("READY");
@@ -84,7 +84,7 @@ void setup()
 
 void loop()
 {
-    /*CheckAnalog();*/
+    /*CheckAnalog();*/ // Obs³uga rolki
     CheckRed();
     CheckBlack();
 }
@@ -167,12 +167,12 @@ void AlpineSignal(int signal[], String signalInfo) // Sygna³ w³aœciwy transmisji
 
 #pragma region Funkcje przerwañ i przycisków
 
-void redISR()
+void redISR() // Przerwanie na czerwonej masie
 {
     redFlag = true;
 }
 
-void CheckRed() // Przerwanie na czerwonej masie
+void CheckRed() // Sprawdzanie flagi
 {
     if (redFlag == true)
     {
@@ -180,7 +180,7 @@ void CheckRed() // Przerwanie na czerwonej masie
     }
 }
 
-void RedFlag()
+void RedFlag() // Obs³uga przycisków
 {
     if (digitalRead(Band) == LOW) // Zmiana pasma
     {
@@ -206,7 +206,7 @@ void RedFlag()
     {
         delay(500);
 
-        if (digitalRead(VolDn) == LOW && digitalRead(VolUp) == LOW)
+        if (digitalRead(VolDn) == LOW && digitalRead(VolUp) == LOW) // Wyciszanie poprzez przytrzymanie obu klawiszy g³oœnoœci - gdy brak dodatkowego przycisku
         {
             AlpineSignal(muteBtn, "MUTE");
             delay(100);
@@ -214,7 +214,7 @@ void RedFlag()
         }
         else
         {
-            AlpineSignal(volUp, "VOL_UP");
+            AlpineSignal(volUp, "VOL_UP");  // Podg³aszanie
             delay(100);
             redFlag = false;
         }
@@ -225,7 +225,7 @@ void RedFlag()
     {
         delay(500);
 
-        if (digitalRead(VolDn) == LOW && digitalRead(VolUp) == LOW)
+        if (digitalRead(VolDn) == LOW && digitalRead(VolUp) == LOW) // Wyciszanie poprzez przytrzymanie obu klawiszy g³oœnoœci - gdy brak dodatkowego przycisku
         {
             AlpineSignal(muteBtn, "MUTE");
             delay(100);
@@ -233,7 +233,7 @@ void RedFlag()
         }
         else
         {
-            AlpineSignal(volDn, "VOL_DN");
+            AlpineSignal(volDn, "VOL_DN"); // Przyciszanie
             delay(100);
             redFlag = false;
         }
@@ -241,19 +241,19 @@ void RedFlag()
     }
 }
 
-void blackISR()
+void blackISR() // Przerwanie na czarnej masie
 {
     blackFlag = true;
 }
 
-void CheckBlack() // Przerwanie na czarnej masie
+void CheckBlack() // Sprawdzenie flagi
 {
     if (blackFlag == true)
     {
         BlackFlag();
     }
 }
-void BlackFlag()
+void BlackFlag() // Obs³uga przycisków
 {
     if (digitalRead(SrcUp) != digitalRead(SrcDn))
     {
@@ -299,45 +299,45 @@ void BlackFlag()
 
 #pragma region Rolka
 
-void CheckAnalog() // Obs³uga rolki
-{
-    analogCheck = analogRead(BROWN);
-    Serial.print("AnalogCheck: ");
-    Serial.println(analogCheck);
-
-    if (millis() - lastCheck >= 150)
-    {
-        analogValue = analogRead(BROWN);
-        Serial.println("AnalogValue: ");
-        Serial.println(analogValue);
-
-        if (analogValue > analogCheck)
-        {
-            if ((analogValue - analogCheck) > 3) // Zmiana stacji lub utworu zale¿nie od trybu
-            {
-                AlpineSignal(stUp, "ST_UP");
-                delay(100);
-
-                AlpineSignal(trkUp, "TRK_UP");
-                delay(100);
-            }
-        }
-
-        if (analogValue < analogCheck)
-        {
-            if ((analogValue - analogCheck) > 3) // Zmiana stacji lub utworu zale¿nie od trybu
-            {
-                AlpineSignal(stDn, "ST_DN");
-                delay(100);
-
-                AlpineSignal(trkDn, "TRK_DN");
-                delay(100);
-            }
-        }
-    }
-    lastCheck = millis();
-}
+//void CheckAnalog() // Obs³uga rolki
+//{
+//    analogCheck = analogRead(BROWN);
+//    Serial.print("AnalogCheck: ");
+//    Serial.println(analogCheck);
+//
+//    if (millis() - lastCheck >= 150)
+//    {
+//        analogValue = analogRead(BROWN);
+//        Serial.println("AnalogValue: ");
+//        Serial.println(analogValue);
+//
+//        if (analogValue > analogCheck)
+//        {
+//            if ((analogValue - analogCheck) > 3) // Zmiana stacji lub utworu zale¿nie od trybu
+//            {
+//                AlpineSignal(stUp, "ST_UP");
+//                delay(100);
+//
+//                AlpineSignal(trkUp, "TRK_UP");
+//                delay(100);
+//            }
+//        }
+//
+//        if (analogValue < analogCheck)
+//        {
+//            if ((analogValue - analogCheck) > 3) // Zmiana stacji lub utworu zale¿nie od trybu
+//            {
+//                AlpineSignal(stDn, "ST_DN");
+//                delay(100);
+//
+//                AlpineSignal(trkDn, "TRK_DN");
+//                delay(100);
+//            }
+//        }
+//    }
+//    lastCheck = millis();
+//}
 
 #pragma endregion
 
-// Przerwania zdaj¹ siê reagowaæ. Przytrzymanie przycisku przez pewien czas te¿. Nale¿y ustawiæ czasy przytrzymania (w szczególnoœci mute) i przetestowaæ na radiu, a potem przenieœæ projekt na atmegê. Wczeœniej potestowaæ z rolk¹.
+// Przyciski i przerwania dzia³aj¹. Nale¿y przetestowaæ na radiu. Nale¿y dodaæ i przetestowaæ obs³ugê rolki, a potem przenieœæ projekt na atmegê.
