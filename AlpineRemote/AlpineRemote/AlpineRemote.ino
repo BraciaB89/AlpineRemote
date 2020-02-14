@@ -182,18 +182,27 @@ void CheckRed() // Przerwanie na czerwonej masie
 
 void RedFlag()
 {
+    delay(500);
+
     if (digitalRead(Band) == LOW) // Zmiana pasma
     {
         AlpineSignal(bandProg, "BAND");
-        delay(250);
+        delay(100);
         redFlag = false;
     }
 
     if (digitalRead(VolDn) == LOW && digitalRead(VolUp) == LOW) // Wyciszanie poprzez przytrzymanie obu klawiszy g³oœnoœci - gdy brak dodatkowego przycisku
     {
-        AlpineSignal(muteBtn, "MUTE");
-        delay(100);
+        delay(1000);
+
+        if (digitalRead(VolDn) == LOW && digitalRead(VolUp) == LOW)
+        {
+            AlpineSignal(muteBtn, "MUTE");
+            delay(100);
+            redFlag = false;
+        }
         redFlag = false;
+        
     }
 
     if (digitalRead(VolUp) == LOW && digitalRead(VolDn) == HIGH) // Podg³aszanie
@@ -225,9 +234,11 @@ void CheckBlack() // Przerwanie na czarnej masie
 }
 void BlackFlag()
 {
+    delay(500);
+
     if (digitalRead(SrcUp) != digitalRead(SrcDn))
     {
-        delay(1500);
+        delay(1000);
 
         if (digitalRead(SrcUp) != digitalRead(SrcDn)) // Naciœnij jeden d³u¿ej aby zapauzowaæ
         {
