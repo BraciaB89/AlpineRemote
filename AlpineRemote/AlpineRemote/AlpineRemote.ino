@@ -182,8 +182,6 @@ void CheckRed() // Przerwanie na czerwonej masie
 
 void RedFlag()
 {
-    delay(500);
-
     if (digitalRead(Band) == LOW) // Zmiana pasma
     {
         AlpineSignal(bandProg, "BAND");
@@ -193,7 +191,7 @@ void RedFlag()
 
     if (digitalRead(VolDn) == LOW && digitalRead(VolUp) == LOW) // Wyciszanie poprzez przytrzymanie obu klawiszy g³oœnoœci - gdy brak dodatkowego przycisku
     {
-        delay(1000);
+        delay(500);
 
         if (digitalRead(VolDn) == LOW && digitalRead(VolUp) == LOW)
         {
@@ -201,21 +199,44 @@ void RedFlag()
             delay(100);
             redFlag = false;
         }
-        redFlag = false;
-        
+        redFlag = false;        
     }
 
     if (digitalRead(VolUp) == LOW && digitalRead(VolDn) == HIGH) // Podg³aszanie
     {
-        AlpineSignal(volUp, "VOL_UP");
-        delay(100);
+        delay(500);
+
+        if (digitalRead(VolDn) == LOW && digitalRead(VolUp) == LOW)
+        {
+            AlpineSignal(muteBtn, "MUTE");
+            delay(100);
+            redFlag = false;
+        }
+        else
+        {
+            AlpineSignal(volUp, "VOL_UP");
+            delay(100);
+            redFlag = false;
+        }
         redFlag = false;
     }
 
     if (digitalRead(VolDn) == LOW && digitalRead(VolUp) == HIGH) // Przyciszanie
     {
-        AlpineSignal(volDn, "VOL_DN");
-        delay(100);
+        delay(500);
+
+        if (digitalRead(VolDn) == LOW && digitalRead(VolUp) == LOW)
+        {
+            AlpineSignal(muteBtn, "MUTE");
+            delay(100);
+            redFlag = false;
+        }
+        else
+        {
+            AlpineSignal(volDn, "VOL_DN");
+            delay(100);
+            redFlag = false;
+        }
         redFlag = false;
     }
 }
@@ -234,8 +255,6 @@ void CheckBlack() // Przerwanie na czarnej masie
 }
 void BlackFlag()
 {
-    delay(500);
-
     if (digitalRead(SrcUp) != digitalRead(SrcDn))
     {
         delay(1000);
